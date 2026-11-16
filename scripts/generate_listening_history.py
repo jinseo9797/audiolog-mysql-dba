@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import mysql.connector
 from dotenv import load_dotenv
 
-# 환경변수 불러오기
+# 환경변수 로드
 load_dotenv()
 
 TARGET_COUNT = 100000
@@ -14,7 +14,7 @@ BATCH_SIZE = 5000
 START_DATE = datetime(2026, 1, 1)
 END_DATE = datetime(2026, 11, 15)
 
-# MySQL 접속
+# MySQL 연결
 connection = mysql.connector.connect(
     host=os.getenv("DB_HOST"),
     port=int(os.getenv("DB_PORT")),
@@ -27,7 +27,7 @@ try:
     cursor = connection.cursor()
 
     try:
-        # 기존 청취 기록 건수 확인
+        # 청취 기록 수 조회
         cursor.execute("SELECT COUNT(*) FROM listening_history")
         current_count = cursor.fetchone()[0]
 
@@ -36,11 +36,11 @@ try:
         print(f"현재 청취 기록: {current_count}")
         print(f"추가할 청취 기록: {remaining}")
 
-        # 실제 회원 ID 조회
+        # 회원 ID 조회
         cursor.execute("SELECT user_id FROM users")
         user_ids = [row[0] for row in cursor.fetchall()]
 
-        # 실제 콘텐츠 ID와 재생 시간 조회
+        # 콘텐츠 ID·재생 시간 조회
         cursor.execute("""
             SELECT content_id, duration_sec
             FROM contents
@@ -50,7 +50,7 @@ try:
         if remaining > 0 and (not user_ids or not content_data):
             raise ValueError("회원 또는 콘텐츠 데이터가 없습니다.")
 
-        # 청취 기록 INSERT 쿼리
+        # 청취 기록 INSERT
         sql = """
             INSERT INTO listening_history
                 (user_id, content_id, listened_at, play_sec)
@@ -62,11 +62,11 @@ try:
         while inserted < remaining:
             batch = []
 
-            # 이번 배치의 데이터 건수
+            # 배치 크기 계산
             batch_count = min(BATCH_SIZE, remaining - inserted)
 
             for _ in range(batch_count):
-                # 회원과 콘텐츠 무작위 선택
+                # 회원·콘텐츠 선택
                 user_id = random.choice(user_ids)
                 content_id, duration_sec = random.choice(content_data)
 
@@ -79,7 +79,7 @@ try:
                     seconds=random_seconds
                 )
 
-                # 실제 청취 시간 생성
+                # 청취 시간 생성
                 play_sec = random.randint(0, duration_sec)
 
                 batch.append((
@@ -90,10 +90,10 @@ try:
                 ))
 
             try:
-                # 배치 단위 데이터 삽입
+                # 배치 INSERT
                 cursor.executemany(sql, batch)
 
-                # 배치 단위 변경 확정
+                # 배치 COMMIT
                 connection.commit()
 
                 inserted += batch_count
@@ -101,7 +101,7 @@ try:
                 print(f"추가 완료: {inserted}/{remaining}")
 
             except mysql.connector.Error:
-                # 현재 미커밋 배치 취소
+                # 실패 배치 ROLLBACK
                 connection.rollback()
                 raise
 
@@ -112,5 +112,5 @@ try:
         cursor.close()
 
 finally:
-    # DB 연결 종료
+    # 연결 종료
     connection.close()
