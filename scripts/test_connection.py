@@ -3,10 +3,10 @@ import os
 import mysql.connector
 from dotenv import load_dotenv
 
-# 환경변수 불러오기
+# 환경변수 로드
 load_dotenv()
 
-# MySQL 접속
+# MySQL 연결
 connection = mysql.connector.connect(
     host=os.getenv("DB_HOST"),
     port=int(os.getenv("DB_PORT")),
@@ -16,7 +16,7 @@ connection = mysql.connector.connect(
 )
 
 try:
-    # SQL 실행
+    # 연결 정보 조회
     cursor = connection.cursor()
 
     try:
@@ -31,5 +31,5 @@ try:
         cursor.close()
 
 finally:
-    # DB 연결 종료
+    # 연결 종료
     connection.close()
