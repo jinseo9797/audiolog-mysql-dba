@@ -1,9 +1,9 @@
--- 원본 audiolog vs 복원본 audiolog_restore 비교 검증
--- 사전 조건: mysqldump로 audiolog_restore 복원 완료
--- 비교 시점 사이에 원본 데이터가 수정되면 차이가 발생할 수 있음
--- 조회 전용: 원본 및 복원본 데이터를 변경하지 않음
+-- 원본·복원본 데이터 비교
+-- audiolog_restore 복원 후 실행
+-- 비교 중 원본 데이터 변경 주의
+-- 조회 전용 SQL
 
--- 1. 테이블별 건수 비교
+-- 1. 테이블 건수
 SELECT 'users' AS table_name,
        (SELECT COUNT(*) FROM audiolog.users) AS original_count,
        (SELECT COUNT(*) FROM audiolog_restore.users) AS restored_count
@@ -16,7 +16,7 @@ SELECT 'listening_history',
        (SELECT COUNT(*) FROM audiolog.listening_history),
        (SELECT COUNT(*) FROM audiolog_restore.listening_history);
 
--- 2. 회원 데이터 양방향 비교 (PK 및 모든 정의 컬럼)
+-- 2. 회원 데이터 양방향 비교
 SELECT COUNT(*) AS users_mismatch_count
 FROM (
     SELECT o.user_id
@@ -53,7 +53,7 @@ FROM (
     WHERE o.content_id IS NULL
 ) AS differences;
 
--- 4. 청취 기록 데이터 양방향 비교
+-- 4. 청취 기록 양방향 비교
 SELECT COUNT(*) AS listening_history_mismatch_count
 FROM (
     SELECT o.history_id
@@ -73,7 +73,7 @@ FROM (
     WHERE o.history_id IS NULL
 ) AS differences;
 
--- 5. 복원본 FK 참조 검증
+-- 5. 복원본 FK 확인
 SELECT COUNT(*) AS invalid_user_count
 FROM audiolog_restore.listening_history AS lh
 LEFT JOIN audiolog_restore.users AS u ON lh.user_id = u.user_id
@@ -84,19 +84,19 @@ FROM audiolog_restore.listening_history AS lh
 LEFT JOIN audiolog_restore.contents AS c ON lh.content_id = c.content_id
 WHERE c.content_id IS NULL;
 
--- 6. PK/FK/UNIQUE/CHECK 제약조건 목록 비교
+-- 6. 제약조건 비교
 SELECT table_schema, table_name, constraint_name, constraint_type
 FROM information_schema.table_constraints
 WHERE table_schema IN ('audiolog', 'audiolog_restore')
 ORDER BY table_name, constraint_type, constraint_name, table_schema;
 
--- 7. 인덱스 정의 및 가시성 비교
+-- 7. 인덱스 비교
 SELECT table_schema, table_name, index_name, non_unique,
        seq_in_index, column_name, collation, is_visible
 FROM information_schema.statistics
 WHERE table_schema IN ('audiolog', 'audiolog_restore')
 ORDER BY table_name, index_name, seq_in_index, table_schema;
 
--- 8. 실제 FK 및 CHECK 표현식 확인
+-- 8. 테이블 정의 확인
 SHOW CREATE TABLE audiolog.listening_history;
 SHOW CREATE TABLE audiolog_restore.listening_history;
