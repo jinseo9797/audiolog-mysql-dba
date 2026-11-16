@@ -1,4 +1,13 @@
+# Python
 .venv/
-.env
 __pycache__/
 *.pyc
+
+# 환경변수
+.env
+
+# 로컬 백업
+backups/
+
+# IDE 설정
+.vscode/
