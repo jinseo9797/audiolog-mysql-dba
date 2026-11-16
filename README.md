@@ -2,7 +2,8 @@
 
 > 가상 오디오 콘텐츠 서비스의 **MySQL 데이터베이스 설계·검증·성능 비교·백업 및 복원** 개인 실습
 
-MySQL을 활용해 테이블 설계, 데이터 검증, 인덱스 성능 비교, 백업·복원 과정을 직접 실습하고 결과를 기록했습니다. 실제 기업의 내부 시스템이나 운영 환경을 재현한 프로젝트는 아닙니다.
+MySQL을 활용해 테이블 설계, 데이터 검증, 인덱스 성능 비교, 백업·복원 과정을 직접 실습하고 결과를 기록했습니다.
+가상의 데이터를 임의로 생성하여 실습 진행했습니다.
 
 ## 한눈에 보는 결과
 
@@ -67,7 +68,6 @@ $env:MYSQL_ROOT_PASSWORD = Read-Host "로컬 MySQL root 비밀번호"
 docker run -d --name audiolog-mysql -e MYSQL_ROOT_PASSWORD="$env:MYSQL_ROOT_PASSWORD" -p 127.0.0.1:3307:3306 -v audiolog_mysql_data:/var/lib/mysql mysql:8.4
 ```
 
-비밀번호 입력값을 다른 사람에게 공유하지 않습니다. 위 예시는 **로컬 실습 전용**이며 실제 서비스 보안 설정 전체를 포함하지 않습니다. Docker가 준비되면 MySQL Workbench에서 `127.0.0.1:3307`로 연결합니다.
 
 ### 2. DB와 Python 준비
 
