@@ -1,6 +1,6 @@
--- AudioLog 가상 오디오 서비스 DB 스키마
--- 신규 환경에서 1회 실행용 / 기존 테이블 삭제하지 않음
--- 주의: IF NOT EXISTS는 기존 테이블 구조를 수정하지 않음
+-- AudioLog 테이블 생성
+-- 신규 DB에서 실행 / 기존 테이블 유지
+-- IF NOT EXISTS: 기존 테이블 변경 없음
 
 CREATE DATABASE IF NOT EXISTS audiolog
     CHARACTER SET utf8mb4
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS listening_history (
         FOREIGN KEY (content_id) REFERENCES contents(content_id)
 ) ENGINE = InnoDB;
 
--- 생성된 테이블 및 제약조건 확인
+-- 테이블 구조 확인
 SHOW TABLES;
 SHOW CREATE TABLE users;
 SHOW CREATE TABLE contents;
