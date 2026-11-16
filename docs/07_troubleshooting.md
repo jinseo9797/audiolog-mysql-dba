@@ -6,7 +6,7 @@
 
 **현상:** Python INSERT에서 MySQL 오류 `1205 (Lock wait timeout)`가 발생했습니다.
 
-**확인:** `information_schema.innodb_trx`와 `sys.innodb_lock_waits`로 트랜잭션과 잠금 대기를 조회했습니다. 미완료 트랜잭션을 점검한 후 다시 실행하자 회원 10건 INSERT에 성공했습니다.
+**확인:** `information_schema.innodb_trx`와 `sys.innodb_lock_waits`로 트랜잭션과 잠금 대기를 조회했습니다. 미완료 트랜잭션을 점검한 후 재실행해 회원 데이터 INSERT를 완료했습니다.
 
 **주의:** 어떤 세션이 잠금을 일으켰는지는 확인하지 못했습니다. 따라서 정확한 원인을 해결했다고 단정하지 않습니다.
 
