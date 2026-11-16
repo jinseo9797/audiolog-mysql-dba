@@ -2,18 +2,18 @@ import os
 import uuid
 
 import mysql.connector
-# 가상의 데이터 생성을 위한 라이브러리 사용
+# 테스트 데이터 생성
 from faker import Faker
 from dotenv import load_dotenv
 
-# 환경변수 불러오기
+# 환경변수 로드
 load_dotenv()
 
 fake = Faker()
 
 TARGET_USERS = 1000
 
-# MySQL 접속
+# MySQL 연결
 connection = mysql.connector.connect(
     host=os.getenv("DB_HOST"),
     port=int(os.getenv("DB_PORT")),
@@ -26,11 +26,11 @@ try:
     cursor = connection.cursor()
 
     try:
-        # 현재 회원 수 확인
+        # 회원 수 조회
         cursor.execute("SELECT COUNT(*) FROM users")
         current_count = cursor.fetchone()[0]
 
-        # 추가 생성할 회원 수 계산
+        # 부족한 회원 수 계산
         remaining = max(0, TARGET_USERS - current_count)
 
         print(f"현재 회원 수: {current_count}")
@@ -40,7 +40,7 @@ try:
             users = []
 
             for _ in range(remaining):
-                # 중복 가능성을 낮춘 테스트 이메일
+                # 고유 이메일 생성
                 unique_id = uuid.uuid4().hex
 
                 email = f"test_{unique_id}@example.com"
@@ -48,7 +48,7 @@ try:
 
                 users.append((email, nickname, "active"))
 
-            # 회원 데이터 일괄 등록
+            # 회원 일괄 등록
             sql = """
                 INSERT INTO users (email, nickname, status)
                 VALUES (%s, %s, %s)
@@ -56,7 +56,7 @@ try:
 
             cursor.executemany(sql, users)
 
-            # 변경사항 확정
+            # 변경 확정
             connection.commit()
 
             print(f"회원 {cursor.rowcount}건 추가 완료")
@@ -65,7 +65,7 @@ try:
             print("이미 목표 회원 수에 도달했습니다.")
 
     except mysql.connector.Error as e:
-        # 오류 발생 시 변경 취소
+        # 오류 시 롤백
         connection.rollback()
         print(f"MySQL 오류 발생: {e}")
         raise
@@ -75,5 +75,5 @@ try:
         cursor.close()
 
 finally:
-    # DB 연결 종료
+    # 연결 종료
     connection.close()
