@@ -1,26 +1,26 @@
--- MySQL 최소 권한 계정 실습 (실행 전 문서 확인)
--- ddl 사용
+-- 읽기 전용 계정 실습 (미검증 예제)
+-- 계정 변경 SQL: 관리자 계정에서 실행
 
--- 1. 읽기 전용 계정 생성: 한 번만 실행
+-- 1. 계정 생성 (최초 1회)
 -- CREATE USER 'audiolog_reader'@'%'
 -- IDENTIFIED BY 'REPLACE_WITH_STRONG_PASSWORD';
 
--- 2. audiolog DB의 SELECT만 허용
+-- 2. SELECT 권한 부여
 -- GRANT SELECT ON audiolog.* TO 'audiolog_reader'@'%';
 
--- 3. 관리자 계정에서 부여한 권한 확인
+-- 3. 권한 확인 (관리자)
 -- SHOW GRANTS FOR 'audiolog_reader'@'%';
 
--- 4. 새 Workbench 연결에서 audiolog_reader 계정으로 로그인한 후 실행
+-- 4. 읽기 전용 계정으로 조회
 -- SELECT COUNT(*) AS user_count FROM audiolog.users;
 
--- 5. 동일한 읽기 전용 계정에서 INSERT가 거부되는지 확인
+-- 5. INSERT 거부 확인
 -- 예상: ERROR 1142 (INSERT command denied)
--- 주의: 읽기 전용 권한이 확인된 별도 계정에서만 실행
+-- 읽기 전용 계정에서만 실행
 -- INSERT INTO audiolog.users (email, nickname)
 -- VALUES ('permission-test@example.com', 'PermissionTest');
 
--- 6. 실습 계정 정리 (필요한 경우 관리자 계정에서 실행)
+-- 6. 실습 계정 삭제 (관리자)
 -- DROP USER 'audiolog_reader'@'%';
 
--- 주의: 이 파일은 실습용 예제이며 아직 실행/검증 결과는 포함하지 않음
+-- 실행 결과 미검증
